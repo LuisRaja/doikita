@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: doikita
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --worker-class sync --threads 4 --timeout 120
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: APPS_SCRIPT_URL
+        sync: false
+      - key: FLASK_DEBUG
+        value: "false"
