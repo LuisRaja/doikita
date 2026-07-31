@@ -19,18 +19,9 @@ if WEBHOOK_URL:
     print("Bot mode: webhook")
 
 
-def _start_scheduler():
-    from apscheduler.schedulers.background import BackgroundScheduler
-    from service.telegram import reminder_job, monthly_recap_job
+from service.scheduler import start_scheduler
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(reminder_job, "interval", hours=2, id="reminder")
-    scheduler.add_job(monthly_recap_job, "cron", day=1, hour=9, minute=0, id="monthly_recap")
-    scheduler.start()
-    return scheduler
-
-
-_scheduler = _start_scheduler()
+_scheduler = start_scheduler()
 
 
 @app.before_request

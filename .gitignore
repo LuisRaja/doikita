@@ -4,6 +4,7 @@ __pycache__/
 pdf/
 data/
 bill/
+bot.log
 credentials.json
 bot_token.txt
 venv/
