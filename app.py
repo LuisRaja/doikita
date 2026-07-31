@@ -147,4 +147,4 @@ if __name__ == "__main__":
         bot_thread = threading.Thread(target=start_bot, daemon=True)
         bot_thread.start()
 
-    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG, use_reloader=False)
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG, use_reloader=False, threaded=True)
