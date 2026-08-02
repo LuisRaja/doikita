@@ -6,8 +6,8 @@ import time
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
-from service.database import get_db, add_transaction, init_saldo_if_not_exists, get_saldo_by_kategori, update_saldo
-from config import BOT_TOKEN
+from service.database import get_db, add_transaction, init_saldo_if_not_exists, get_saldo_by_kategori, update_saldo, get_telegram_auth, save_telegram_auth
+from config import BOT_TOKEN, SUPABASE_URL, SUPABASE_KEY
 from service.sheets import append_transaction
 
 user_data_store = {}
@@ -15,6 +15,11 @@ AUTH_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "authorized_us
 
 
 def _load_auth() -> dict:
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            return get_telegram_auth(get_db())
+        except Exception:
+            pass
     if not os.path.exists(AUTH_FILE):
         return {}
     try:
@@ -28,6 +33,11 @@ def _load_auth() -> dict:
 
 
 def _save_auth(users: dict):
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            save_telegram_auth(get_db(), users)
+        except Exception:
+            pass
     os.makedirs(os.path.dirname(AUTH_FILE), exist_ok=True)
     with open(AUTH_FILE, "w") as f:
         json.dump(users, f, indent=2)

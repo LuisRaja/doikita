@@ -3,6 +3,8 @@
 CREATE TABLE IF NOT EXISTS telegram_auth (
     user_id BIGINT PRIMARY KEY,
     username TEXT,
+    mode TEXT,
+    chat_id BIGINT,
     created_at TIMESTAMPTZ DEFAULT now()
 );
 

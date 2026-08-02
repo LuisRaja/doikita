@@ -6,6 +6,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --worker-class sync --threads 4 --timeout 120
     healthCheckPath: /health
+    # Free plan spins down after 15 min idle. Keep it awake with a UptimeRobot
+    # HTTP monitor on https://<app>.onrender.com/health every 5 min.
     envVars:
       - key: SUPABASE_URL
         sync: false

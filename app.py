@@ -24,6 +24,37 @@ from service.scheduler import start_scheduler
 _scheduler = start_scheduler()
 
 
+def _keepalive_url() -> str:
+    if not WEBHOOK_URL:
+        return None
+    base = WEBHOOK_URL.rstrip("/")
+    if base.endswith("/webhook"):
+        base = base[: -len("/webhook")]
+    return base + "/health"
+
+
+def _keepalive_loop():
+    import time
+    import urllib.request
+
+    url = _keepalive_url()
+    while True:
+        time.sleep(300)
+        try:
+            urllib.request.urlopen(url, timeout=10).read()
+        except Exception:
+            pass
+
+
+def start_keepalive():
+    if not _keepalive_url():
+        return
+    threading.Thread(target=_keepalive_loop, daemon=True).start()
+
+
+start_keepalive()
+
+
 @app.before_request
 def before_request():
     if request.endpoint and request.endpoint not in ("login", "webhook", "health") and not session.get("user"):

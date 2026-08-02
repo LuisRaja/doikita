@@ -90,6 +90,31 @@ def get_rekapan(db: Client, bulan: int, tahun: int, user: str = None) -> list:
     return query.execute().data
 
 
+def get_telegram_auth(db: Client) -> dict:
+    result = db.table("telegram_auth").select("user_id, mode, chat_id").execute()
+    users = {}
+    for row in result.data:
+        users[str(row["user_id"])] = {
+            "mode": row.get("mode"),
+            "chat_id": row.get("chat_id") if row.get("chat_id") is not None else int(row["user_id"]),
+        }
+    return users
+
+
+def save_telegram_auth(db: Client, users: dict):
+    for uid_str, data in users.items():
+        db.table("telegram_auth").upsert({
+            "user_id": int(uid_str),
+            "mode": data.get("mode"),
+            "chat_id": data.get("chat_id", int(uid_str)),
+        }).execute()
+
+    existing = db.table("telegram_auth").select("user_id").execute()
+    known = {str(row["user_id"]) for row in existing.data}
+    for uid in known - set(users.keys()):
+        db.table("telegram_auth").delete().eq("user_id", int(uid)).execute()
+
+
 def get_saldo_dashboard(db: Client, user: str) -> dict:
     saldo_list = get_saldo(db)
     result = {}
